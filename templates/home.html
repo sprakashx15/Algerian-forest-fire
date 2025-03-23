@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Weather Index Calculator</title>
+    <style>
+        form {
+            max-width: 450px;
+            margin: auto;
+            padding: 20px;
+            border: 3px solid #161616;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        input {
+            width: 95%;
+            padding: 10px 10px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .fwi-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            color: rgb(15, 15, 14);
+            font-weight: bold;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 30px;
+            background-image: url('static/images/bg2.jpg');
+            background-size: cover;
+            background-position: center;
+            color: rgb(15, 15, 14);
+        }
+    </style>
+</head>
+<body>
+    <h2 style = "color:white">Fire Weather Index (FWI) Calculator</h2>
+    <form action="{{url_for('predict_datapoint')}}" method="POST">
+        <input type="number" name="temperature" placeholder="Temperature (°C)" step="any" required>
+        <input type="number" name="humidity" placeholder="Relative Humidity (%)" step="any" required>
+        <input type="number" name="wind" placeholder="Wind Speed (km/h)" step="any" required>
+        <input type="number" name="rain" placeholder="Rainfall (mm)" step="any" required>
+        <input type="number" name="ffmc" placeholder="FFMC (Fuel Moisture Content)" step="any" required>
+        <input type="number" name="dmc" placeholder="DMC (Duff Moisture)" step="any" required>
+        <input type="number" name="isi" placeholder="ISI" step="any" required>
+        <input type="number" name="classes" placeholder="Classes (0 or 1)" step="any" required>
+        <button type="submit">Calculate FWI</button>
+    </form>
+
+    {% if results %}
+    <h2 style = "background-color:rgb(255, 255, 255)">FWI Prediction: {{results}}</h2>
+    <div class="fwi-result" style="background-color: {% if results <= 4.9 %}green{% elif results <= 11.9 %}yellow{% elif results <= 21.9 %}orange{% elif results <= 49.9 %}red{% else %}darkred{% endif %};">
+        {% if results <= 4.9 %}Low (0-4.9): Low risk, fires are unlikely to ignite or spread significantly.
+        {% elif results <= 11.9 %}Moderate (5-11.9): Fires may start easily but are generally controllable.
+        {% elif results <= 21.9 %}High (12-21.9): Fires can start easily, spread quickly, and may be difficult to control.
+        {% elif results <= 49.9 %}Very High (22-49.9): Fires will start easily, spread rapidly, and can be challenging to control.
+        {% else %}Extreme (50+): Fires will start readily, spread uncontrollably, and present significant danger to life and property.
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+</html>
